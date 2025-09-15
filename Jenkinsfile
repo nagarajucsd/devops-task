@@ -26,14 +26,13 @@ pipeline {
     }
 
     stage('Get Commit Hash') {
-      steps {
-        script {
-          // Save commit hash as pipeline variable
-          env.TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-          echo "Using image tag: ${env.TAG}"
-        }
-      }
+  steps {
+    script {
+      env.TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+      echo "Commit tag is: ${env.TAG}"
     }
+  }
+}
 
     stage('Build Docker Image') {
       steps {
