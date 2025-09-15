@@ -23,15 +23,20 @@ pipeline {
       }
     }
     stage('Build Docker Image') {
-      steps {
-        script {
-          sh 'GIT_SHORT=$(git rev-parse --short HEAD) && echo "TAG=$GIT_SHORT" > tagfile'
-          def TAG = sh(script: "cut -d= -f2 tagfile", returnStdout: true).trim()
-          sh 'docker build -t ${DOCKERHUB_USER}/${APP_NAME}:${TAG} .'
-          sh 'docker image ls ${DOCKERHUB_USER}/${APP_NAME}'
-        }
-      }
+  steps {
+    script {
+      // Generate short commit hash
+      def TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+
+      // Build Docker image with proper tag
+      sh "docker build -t ${DOCKERHUB_USER}/${APP_NAME}:${TAG} ."
+
+      // List Docker images for verification
+      sh "docker image ls ${DOCKERHUB_USER}/${APP_NAME}"
     }
+  }
+}
+
     stage('Push to DockerHub') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PSW')]) {
