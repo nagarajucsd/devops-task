@@ -26,10 +26,10 @@ pipeline {
   steps {
     script {
       // Generate short commit hash
-      def TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+
       // Build Docker image with proper tag
       withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PSW')]){
-      sh "docker build -t $DOCKERHUB_USER/$APP_NAME:$TAG ."
+      sh "docker build -t $DOCKERHUB_USER/$APP_NAME:latest ."
 
       // List Docker images for verification
       sh "docker image ls $DOCKERHUB_USER/$APP_NAME"
