@@ -2,8 +2,8 @@ pipeline {
   agent any
   environment {
     AWS_REGION = 'us-east-1'                     // change to your region
-    AWS_ACCOUNT_ID = '<AWS_ACCOUNT_ID>'           // set in Jenkins global env or replace here
-    DOCKERHUB_USER = '<DOCKERHUB_USER>'           // or set as global env
+    AWS_ACCOUNT_ID = 'AKIAQGYBPWAH6NJILV4Y'           // set in Jenkins global env or replace here
+    DOCKERHUB_USER = 'dnraju7747'           // or set as global env
     APP_NAME = 'devops-task-app'
     ECS_CLUSTER = 'devops-task-cluster'
     ECS_SERVICE = 'devops-task-service'
@@ -26,12 +26,13 @@ pipeline {
   steps {
     script {
       // Generate short commit hash
-
+      sh 'GIT_SHORT=$(git rev-parse --short HEAD) && echo "TAG=$GIT_SHORT" > tagfile'
+      sh 'TAG=$(cat tagfile | cut -d= -f2)'
       // Build Docker image with proper tag
-      sh "docker build -t ${DOCKERHUB_USER}/${APP_NAME}:latest ."
+      sh "docker build -t $DOCKERHUB_USER/$APP_NAME:$TAG ."
 
       // List Docker images for verification
-      sh "docker image ls ${DOCKERHUB_USER}/${APP_NAME}"
+      sh "docker image ls $DOCKERHUB_USER/$APP_NAME"
     }
   }
 }
