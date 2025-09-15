@@ -26,8 +26,7 @@ pipeline {
   steps {
     script {
       // Generate short commit hash
-      sh 'GIT_SHORT=$(git rev-parse --short HEAD) && echo "TAG=$GIT_SHORT" > tagfile'
-      sh 'TAG=$(cat tagfile | cut -d= -f2)'
+      def TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
       // Build Docker image with proper tag
       withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PSW')]){
       sh "docker build -t $DOCKERHUB_USER/$APP_NAME:$TAG ."
