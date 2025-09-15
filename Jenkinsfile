@@ -26,9 +26,9 @@ pipeline {
       steps {
         script {
           sh 'GIT_SHORT=$(git rev-parse --short HEAD) && echo "TAG=$GIT_SHORT" > tagfile'
-          sh 'TAG=$(cat tagfile | cut -d= -f2)'
-          sh 'docker build -t $DOCKERHUB_USER/$APP_NAME:$TAG .'
-          sh 'docker image ls $DOCKERHUB_USER/$APP_NAME'
+          def TAG = sh(script: "cut -d= -f2 tagfile", returnStdout: true).trim()
+          sh 'docker build -t ${DOCKERHUB_USER}/${APP_NAME}:${TAG} .'
+          sh 'docker image ls ${DOCKERHUB_USER}/${APP_NAME}'
         }
       }
     }
